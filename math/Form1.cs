@@ -17,80 +17,92 @@ namespace math
         {
             InitializeComponent();
         }
+        //Def
         private readonly Random random = new Random();
+        private DateTime startTime;
+        private Timer TimerNumberGenerator;
+
+        //Asg
+        public int iterations = 8;
+        int CountCorrectAnswer = 0;
+        int CountIncorrectAnswer = 0;
+        int QuestionsCount = 0;
+        int Answer = 0;
+        public int AsgQCount = 5;
+        public int RandStartNumber = 1;
+        public int RandEndNumber = 500;
+        public int _Itr = 8;
+        public int _NumberShowSpeed = 400;
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            ShowNumbers();
-        }
-        private Timer timer;
-        private void ShowNumbers()
+            startTime = DateTime.Now;
+            TimerCountDown.Start();
+            GenerateNumbers();
+        }      
+       
+        private void GenerateNumbers()
         {
             lblAnswer.Text = string.Empty;
             lblNumber.Text = string.Empty;  
-            textBoxUserAnswer.Text = string.Empty;
-            timer = new Timer();
-            timer.Interval = 500;
-            timer.Tick += Timer_Tick;
-            timer.Start();
+            txtAnswer.Text = string.Empty;
+            TimerNumberGenerator = new Timer();
+            TimerNumberGenerator.Interval = _NumberShowSpeed;
+            TimerNumberGenerator.Tick += TimerNumberGenerator_Tick;
+            TimerNumberGenerator.Start();
         }
 
       
-        private int iterations = 8;
-
-        int CountCorrectAnswer=0;
-        int CountIncorrectAnswer=0;
-        int QestionCount = 0;
-
-        private void button1_Click(object sender, EventArgs e)
+       
+        private void TimerNumberGenerator_Tick(object sender, EventArgs e)
         {
-            QestionCount++;
-            lblQCount.Text = QestionCount.ToString();
-
-            if (QestionCount == 3)
-            {
-                MessageBox.Show("Correct Answers: " + CountCorrectAnswer.ToString() + "\n" + "Incorrect Answers: " + CountIncorrectAnswer.ToString());
-            }
-            else
-            {
-                int inputAnswer = Convert.ToInt32(textBoxUserAnswer.Text);
-                if (Answer == inputAnswer)
-                {
-                    CountCorrectAnswer++;
-                }
-                else
-                {
-                    CountIncorrectAnswer++;
-                }
-
-                iterations = 8;
-
-               
-                if (QestionCount < 3)
-                {
-                    ShowNumbers();
-                }
-            }
-
-
-        }
-        int Answer = 0;
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            int randomNumber = random.Next(-10, 11);
+            int randomNumber = random.Next(RandStartNumber, RandEndNumber);
             lblNumber.Text = randomNumber.ToString();
             Answer += randomNumber;           
             iterations--;           
             if (iterations <= 0)
             {
                 ((Timer)sender).Stop(); 
-                lblAnswer.Text = Answer.ToString();                
+                lblAnswer.Text = Answer.ToString();
+                
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+       
+        private void TimerCountDown_Tick(object sender, EventArgs e)
         {
-            iterations = 8;
-            ShowNumbers();
+            TimeSpan elapsedTime = DateTime.Now - startTime;
+            //lblTime.Text = $"Elapsed Time: {elapsedTime.Hours:D2}:{elapsedTime.Minutes:D2}:{elapsedTime.Seconds:D2}";
+            lblTime.Text = $"Time:{elapsedTime.Minutes:D2}:{elapsedTime.Seconds:D2}";
+        }
+        private void btnAnswer_Click(object sender, EventArgs e)
+        {
+            //Get a count of questions
+            QuestionsCount++;
+            lblQCount.Text = QuestionsCount.ToString();
+            //match answer correct
+            int inputAnswer = Convert.ToInt32(txtAnswer.Text);
+            if (Answer == inputAnswer)
+            {
+                CountCorrectAnswer++;
+            }
+            else
+            {
+                CountIncorrectAnswer++;
+            }
+
+           // iterations = iterations;
+
+            if (QuestionsCount < AsgQCount)
+            {
+                GenerateNumbers();
+            }
+
+            if (QuestionsCount == AsgQCount)
+            {
+                TimerCountDown.Stop();
+                MessageBox.Show("Correct Answers: " + CountCorrectAnswer.ToString() + "\n" + "Incorrect Answers: " + CountIncorrectAnswer.ToString() + "\n" + "Your Time : " + lblTime.Text);
+            }
         }
     }
 }
